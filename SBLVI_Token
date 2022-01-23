@@ -1,0 +1,57 @@
+Published SB_LVI's Metadata
+
+Metadata of "sb_lvi" was published successfully.
+contracts/create_token_SBLVI_project3.sol : 
+ipfs://QmSns9xSdN19eqFMtzpyzQYvkQBz1efZuBXzViK4RT59ew
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/GSN/Context.sol : 
+ipfs://QmNPrJ4MWKUAWzKXpUqeyKRUfosaoANZAqXgvepdrCwZAG
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/access/Roles.sol : 
+ipfs://QmTEwDbjJNxmMNCDMqtuou3dyM8Wtp8Q9NFvn7SAVM7Jf3
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/access/roles/MinterRole.sol : 
+ipfs://QmP5aMkvFwMJyuQjKE8ADh5tkWYqonb4KjgkAjgYEVVFAv
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol : 
+ipfs://QmbZaJyXdpsYGykVhHH9qpVGQg9DGCxE2QufbCUy3daTgq
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20.sol : 
+ipfs://QmP5spYP8vs2jvLF8zNrXUbqB79hMsoEvMHiLcBxerWKcm
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20Detailed.sol : 
+ipfs://Qmb9iW7yNuYehB2NfhRMs9TakqbLVQhBhmGMkaDZ5g1Eb4
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20Mintable.sol : 
+ipfs://QmcSBRdFwVvy2wFZrBwo5cvqNP4UHh9Eyzf8jnxBgnPqfe
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/IERC20.sol : 
+ipfs://QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc
+metadata.json : 
+ipfs://QmYboDJqZwEWo5txCrdtvZmvNXcT9fPhMm3ytosJJ7vx9S
+
+
+
+
+Code 
+
+
+pragma solidity ^0.5.0;
+
+//  Import the following contracts from the OpenZeppelin library:
+//    * `ERC20`
+//    * `ERC20Detailed`
+//    * `ERC20Mintable`
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20Detailed.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20Mintable.sol";
+
+// Create a constructor for the SB_LVI contract and have the contract inherit the libraries that you imported from OpenZeppelin.
+
+contract SB_LVI is ERC20, ERC20Detailed {
+    address public admin; 
+    constructor() ERC20Detailed("Superbowl_LVI", "SBLVI", 18) public {
+        _mint(msg.sender, 10000 *10 ** 18);
+        admin = msg.sender; 
+    }
+    function mint(address to, uint amount) external {
+            require(msg.sender == admin, 'only admin');
+            _mint(to, amount);
+    }
+
+    function burn(uint amount) external {
+        _burn(msg.sender, amount);
+    }
+}
