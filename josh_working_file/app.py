@@ -1,0 +1,70 @@
+import os
+import json
+from web3 import Web3
+from pathlib import Path
+from dotenv import load_dotenv
+import streamlit as st
+
+load_dotenv()
+
+# Define and connect a new Web3 provider
+w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
+
+################################################################################
+# Contract Helper function:
+# 1. Loads the contract once using cache
+# 2. Connects to the contract using the contract address and ABI
+################################################################################
+
+# Cache the contract on load
+@st.cache(allow_output_mutation=True)
+# Define the load_contract function
+def load_contract():
+
+    # Load Art Gallery ABI
+    with open(Path('./contracts/compiled/bet_slip_abi.json')) as f:
+        bet_slip_abi = json.load(f)
+
+    # Set the contract address (this is the address of the deployed contract)
+    contract_address = os.getenv("SMART_CONTRACT_ADDRESS")
+
+    # Get the contract
+    contract = w3.eth.contract(
+        address=contract_address,
+        abi=bet_slip_abi
+    )
+    # Return the contract from the function
+    return contract
+
+
+# Load the contract
+contract = load_contract()
+
+
+################################################################################
+# Award Certificate
+################################################################################
+games_list = ["CIN vs. KC", "SF vs. LAR"]
+accounts = w3.eth.accounts
+account = accounts[0]
+user_account = st.selectbox("Select Account", options=accounts)
+username = st.text_input("Input username")
+matchup = st.selectbox("Select Matchup", options=games_list)
+amount_bet = st.number_input("Amount Bet", min_value=0)
+
+if st.button("Place Bet"):
+    amount_payable = 0
+    contract.functions.placeBet(user_account, username, matchup, amount_bet, amount_payable).transact({'from': account, 'gas': 1000000})
+
+################################################################################
+# Display Certificate
+################################################################################
+betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
+if st.button("Display Bet"):
+    # Get the certificate owner
+    bet_owner = contract.functions.ownerOf(betID).call()
+    st.write(f"The owner of this bet is{bet_owner}")
+
+    # Get the certificate's metadata
+    #certificate_uri = contract.functions.tokenURI(certificate_id).call()
+    #st.write(f"The certificate's tokenURI metadata is {certificate_uri}")
