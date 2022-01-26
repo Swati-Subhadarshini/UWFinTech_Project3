@@ -24,7 +24,7 @@ st.markdown('## Current Week Matchups & Odds')
 st.dataframe(upcoming_games)
 
 # Create form for submitting bet widgets
-with st.form(key='my_form'):
+with st.form(key='place_bet'):
     st.markdown('### Place your bets here!')
     user_address = st.text_input('Enter your public address')
     user_name = st.text_input('Enter your UserName')
@@ -42,5 +42,13 @@ with st.form(key='my_form'):
             # int(potential_payout),
             # int(earned_payout)
         )
+        st.write("BetID")
 
+# Call block function. Checks to see if bet has finished.
+st.markdown('## Check Bet Status')
+with st.form(key="check_bet"):
+    user_betID = st.text_input('Input your BetID')
+    submitted = submit_button = st.form_submit_button(label='Check Bet Status')
+    if submitted:
+        st.write('Run check bet function')
 
