@@ -36,7 +36,7 @@ contract betWithFriends is ERC721Full {
 
         betHistory[betID] = Bet(username, betSelection, amountOfWager, earnedPayout);
 
-        bool sent = receiver.send(msg.value);
+        bool sent = receiver.send(amountOfWager);
         require(sent, "Failed to send Ether");
         accountBalance = address(this).balance;
     }
@@ -50,6 +50,12 @@ contract betWithFriends is ERC721Full {
         emit completeBet(betID, newEarnedPayout);
 
         return betHistory[betID].earnedPayout;
+    }
+
+    function transferProfits(uint amount, address payable recipient) public {
+        require(recipient == owner || recipient == authorizedRecipient, "The recipient address is not authorized!");
+        recipient.transfer(amount);
+        accountBalance = address(this).balance;
     }
 
     function deposit() public payable {

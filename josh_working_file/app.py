@@ -57,7 +57,7 @@ st.write(potential_payout)
 
 if st.button("Place Bet"):
     earned_payout = 0
-    contract.functions.placeBet(user_account, username, bet_selection, wager, potential_payout, earned_payout).transact({'from': account, 'gas': 1000000})
+    contract.functions.placeBet(user_account, username, bet_selection).transact({'from': account, 'value': w3.toWei(wager,'ether'), 'gas': 1000000})
 
 ################################################################################
 # Display Bet Slip
