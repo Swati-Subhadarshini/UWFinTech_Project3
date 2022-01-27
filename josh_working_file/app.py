@@ -76,5 +76,8 @@ if st.button("Display Bet"):
 
 new_earned_payout = st.number_input("Calculate Payout", min_value=0)
 if st.button("Update Bet"):
-    contract.functions.updateBet(betID, new_earned_payout).transact({'from': user_account, 'gas': 1000000})
-    earned_payout = new_earned_payout
+    try:
+        contract.functions.updateBet(betID, new_earned_payout).transact({'from': user_account, 'gas': 1000000})
+        earned_payout = new_earned_payout
+    except:
+        st.write("You do not have permission for this.")
