@@ -83,6 +83,10 @@ with st.form(key='place_bet'):
     submitted = submit_button = st.form_submit_button(label='Submit Bet')
     if submitted:
         contract.functions.placeBet(user_address, user_name, user_bet_selection).transact({'from': user_address, 'value': w3.toWei(user_wager, 'ether'), 'gas':1000000})
+        # def add_bet_info_to_df():
+            # BET DF BODY
+        
+        # This can all be removed or refined so that it returns the bet information nicely.
         st.write(
             str(user_address),
             str(user_name),
@@ -92,6 +96,8 @@ with st.form(key='place_bet'):
             # int(earned_payout)
         )
         st.write("BetID")
+
+# st.dataframe(placed_bets_df)
 
 # Call block function. Checks to see if bet has finished.
 st.sidebar.markdown('## Check Bet Status')
