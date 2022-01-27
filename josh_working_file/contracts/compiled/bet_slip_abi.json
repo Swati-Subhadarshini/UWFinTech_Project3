@@ -216,10 +216,6 @@
 			{
 				"name": "",
 				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -321,10 +317,6 @@
 			},
 			{
 				"name": "amountOfWager",
-				"type": "uint256"
-			},
-			{
-				"name": "potentialPayout",
 				"type": "uint256"
 			},
 			{
