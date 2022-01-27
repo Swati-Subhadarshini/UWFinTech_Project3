@@ -44,20 +44,23 @@ contract = load_contract()
 ################################################################################
 # Award Certificate
 ################################################################################
-games_list = ["CIN vs. KC", "SF vs. LAR"]
+games_list = ["IMPORT", "GAMES", "HERE"]
 accounts = w3.eth.accounts
 account = accounts[0]
 user_account = st.selectbox("Select Account", options=accounts)
-username = st.text_input("Input username")
-matchup = st.selectbox("Select Matchup", options=games_list)
-amount_bet = st.number_input("Amount Bet", min_value=0)
+username = st.text_input("Input Username")
+bet_selection = st.selectbox("Bet Selection", options=games_list)
+wager = st.number_input("Wager", min_value=0)
+st.markdown("## Potential Payout")
+potential_payout = wager*2
+st.write(potential_payout)
 
 if st.button("Place Bet"):
-    amount_payable = 0
-    contract.functions.placeBet(user_account, username, matchup, amount_bet, amount_payable).transact({'from': account, 'gas': 1000000})
+    earned_payout = 0
+    contract.functions.placeBet(user_account, username, bet_selection).transact({'from': account, 'value': w3.toWei(wager,'ether'), 'gas': 1000000})
 
 ################################################################################
-# Display Certificate
+# Display Bet Slip
 ################################################################################
 betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
 if st.button("Display Bet"):
