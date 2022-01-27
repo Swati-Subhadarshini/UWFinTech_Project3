@@ -7,6 +7,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Create Variable for Odds APi Key
+odds_api_key = os.getenv("ODDS_API")
+
+
 # Function to pull the weekly odds.
 def weekly_odds(dump):
     odds_df = pd.DataFrame()
@@ -22,38 +26,38 @@ def weekly_odds(dump):
          
     return odds_df
 
-# Create Variable for Odds APi Key
-odds_api_key = os.getenv("ODDS_API")
-
-# Define variables for pull requests
-SPORT = 'americanfootball_nfl' # use the sport_key from the /sports endpoint, or use 'upcoming' to see the next 8 games across all sports
-REGIONS = 'us' # uk | us | eu | au. Multiple can be specified if comma delimited
-MARKETS = 'h2h' # h2h | spreads | totals. Multiple can be specified if comma delimited
-ODDS_FORMAT = 'american' # decimal | american
-DATE_FORMAT = 'iso' # iso | unix
+# Function to call the API & return a json object with the odds information.
+def get_odds():
+    # Define variables for pull requests
+    SPORT = 'americanfootball_nfl' # use the sport_key from the /sports endpoint, or use 'upcoming' to see the next 8 games across all sports
+    REGIONS = 'us' # uk | us | eu | au. Multiple can be specified if comma delimited
+    MARKETS = 'h2h' # h2h | spreads | totals. Multiple can be specified if comma delimited
+    ODDS_FORMAT = 'american' # decimal | american
+    DATE_FORMAT = 'iso' # iso | unix
 
 # This cell will process the API Call and create an odds_response variable to be printed below.
 # This does count towards the API usage count.
-odds_response = requests.get(f'https://api.the-odds-api.com/v4/sports/{SPORT}/odds', params={
-    'api_key': odds_api_key,
-    'regions': REGIONS,
-    'markets': MARKETS,
-    'oddsFormat': ODDS_FORMAT,
-    'dateFormat': DATE_FORMAT,
-})
+    odds_response = requests.get(f'https://api.the-odds-api.com/v4/sports/{SPORT}/odds', params={
+        'api_key': odds_api_key,
+        'regions': REGIONS,
+        'markets': MARKETS,
+        'oddsFormat': ODDS_FORMAT,
+        'dateFormat': DATE_FORMAT,
+    })
 # Create object for API call.
-if odds_response.status_code != 200:
-    print(f'Failed to get odds: status_code {odds_response.status_code}, response body {odds_response.text}')
-else:
-    odds_json = odds_response.json()
+    if odds_response.status_code != 200:
+        print(f'Failed to get odds: status_code {odds_response.status_code}, response body {odds_response.text}')
+    else:
+        odds_json = odds_response.json()
+    
+    upcoming_games = weekly_odds(odds_json)
+    upcoming_games = upcoming_games.reset_index().drop(columns='index')
+    first_column = upcoming_games.pop('away_team')
+    second_column = upcoming_games.pop('home_team')
+    upcoming_games.insert(0,'away_team',first_column)
+    upcoming_games.insert(1,'home_team',second_column)
 
-# Use weekly_odds function & format results
-upcoming_games = weekly_odds(odds_json)
-upcoming_games = upcoming_games.reset_index().drop(columns='index')
-first_column = upcoming_games.pop('away_team')
-second_column = upcoming_games.pop('home_team')
-upcoming_games.insert(0,'away_team',first_column)
-upcoming_games.insert(1,'home_team',second_column)
+    upcoming_games.to_csv("Resources/upcoming_games.csv")
 
-# Export upcoming games to csv.
-upcoming_games.to_csv("Resources/upcoming_games.csv")
+
+
