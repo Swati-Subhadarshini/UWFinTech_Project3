@@ -72,7 +72,3 @@ if st.button("Display Bet"):
     st.write(f"Wager:{wager/(1000000000000000000)} Ether")
     st.write(f"Potential Payout:{potential_payout} Ether")
     st.write(f"Earned Payout:{earned_payout} Ether")
-
-    # Get the certificate's metadata
-    #certificate_uri = contract.functions.tokenURI(certificate_id).call()
-    #st.write(f"The certificate's tokenURI metadata is {certificate_uri}")
