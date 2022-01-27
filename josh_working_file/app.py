@@ -46,7 +46,7 @@ contract = load_contract()
 ################################################################################
 games_list = ["IMPORT", "GAMES", "HERE"]
 accounts = w3.eth.accounts
-account = accounts[0]
+#account = accounts[0]
 user_account = st.selectbox("Select Account", options=accounts)
 username = st.text_input("Input Username")
 bet_selection = st.selectbox("Bet Selection", options=games_list)
@@ -57,7 +57,7 @@ st.write(potential_payout)
 
 if st.button("Place Bet"):
     earned_payout = 0
-    contract.functions.placeBet(user_account, username, bet_selection).transact({'from': account, 'value': w3.toWei(wager,'ether'), 'gas': 1000000})
+    contract.functions.placeBet(user_account, username, bet_selection).transact({'from': user_account, 'value': w3.toWei(wager,'ether'), 'gas': 1000000})
 
 ################################################################################
 # Display Bet Slip
@@ -65,8 +65,13 @@ if st.button("Place Bet"):
 betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
 if st.button("Display Bet"):
     # Get the certificate owner
-    bet_owner = contract.functions.ownerOf(betID).call()
-    st.write(f"The owner of this bet is{bet_owner}")
+    username, bet_selection, wager, potential_payout, earned_payout = contract.functions.reviewBet(betID).call()
+    
+    st.write(f"Username:{username}")
+    st.write(f"Selected Bet:{bet_selection}")
+    st.write(f"Wager:{wager/(1000000000000000000)} Ether")
+    st.write(f"Potential Payout:{potential_payout} Ether")
+    st.write(f"Earned Payout:{earned_payout} Ether")
 
     # Get the certificate's metadata
     #certificate_uri = contract.functions.tokenURI(certificate_id).call()

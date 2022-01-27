@@ -195,6 +195,41 @@
 		"constant": true,
 		"inputs": [
 			{
+				"name": "betID",
+				"type": "uint256"
+			}
+		],
+		"name": "reviewBet",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
 				"name": "tokenId",
 				"type": "uint256"
 			}
@@ -286,6 +321,10 @@
 			},
 			{
 				"name": "amountOfWager",
+				"type": "uint256"
+			},
+			{
+				"name": "potentialPayout",
 				"type": "uint256"
 			},
 			{
