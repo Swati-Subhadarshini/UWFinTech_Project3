@@ -65,10 +65,16 @@ if st.button("Place Bet"):
 betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
 if st.button("Display Bet"):
     # Get the certificate owner
-    username, bet_selection, wager, potential_payout, earned_payout = contract.functions.reviewBet(betID).call()
+    username, bet_selection, wager, earned_payout = contract.functions.reviewBet(betID).call()
     
     st.write(f"Username:{username}")
     st.write(f"Selected Bet:{bet_selection}")
     st.write(f"Wager:{wager/(1000000000000000000)} Ether")
     st.write(f"Potential Payout:{potential_payout} Ether")
     st.write(f"Earned Payout:{earned_payout} Ether")
+
+
+new_earned_payout = st.number_input("Calculate Payout", min_value=0)
+if st.button("Update Bet"):
+    contract.functions.updateBet(betID, new_earned_payout).transact({'from': user_account, 'gas': 1000000})
+    earned_payout = new_earned_payout
