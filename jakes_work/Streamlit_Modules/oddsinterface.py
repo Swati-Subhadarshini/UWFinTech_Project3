@@ -3,10 +3,39 @@ import streamlit as st
 from pathlib import Path
 import pandas as pd
 import os
+import json
 from dotenv import load_dotenv
 from web3 import Web3
-# import odds_request
+import odds_request
 
+
+# Web 3 Connection
+##########################################################################
+# Define and connect a new Web3 provider
+w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
+
+# Cache the contract on load
+@st.cache(allow_output_mutation=True)
+# Define the load_contract function
+def load_contract():
+
+    # Load Art Gallery ABI
+    with open(Path('bet_slip_abi.json')) as f:
+        bet_slip_abi = json.load(f)
+
+    # Set the contract address (this is the address of the deployed contract)
+    contract_address = os.getenv("SMART_CONTRACT_ADDRESS")
+
+    # Get the contract
+    contract = w3.eth.contract(
+        address=contract_address,
+        abi=bet_slip_abi
+    )
+    # Return the contract from the function
+    return contract
+
+# Load the contract
+contract = load_contract()
 
 # Python Code & Python Module Imports
 ################################################################################
@@ -41,7 +70,7 @@ with st.form(key='place_bet'):
     user_address = st.text_input('Enter your public address')
     user_name = st.text_input('Enter your UserName')
     user_bet_selection = st.selectbox('Choose YOUR winner:', [Team_1, Team_2, Team_3, Team_4])
-    user_wager = st.number_input('Wager Amount')
+    user_wager = st.number_input('Wager Amount', min_value=0)
     # Potential payout: We need to find a good way to take the odds from the bet selection and do the math to calculate the payout.
     # Probably an if statement. 
         # If odds are positive:
@@ -53,6 +82,11 @@ with st.form(key='place_bet'):
     earned_payout = st.text('Earned Payout Placeholder')
     submitted = submit_button = st.form_submit_button(label='Submit Bet')
     if submitted:
+        contract.functions.placeBet(user_address, user_name, user_bet_selection).transact({'from': user_address, 'value': w3.toWei(user_wager, 'ether'), 'gas':1000000})
+        # def add_bet_info_to_df():
+            # BET DF BODY
+        
+        # This can all be removed or refined so that it returns the bet information nicely.
         st.write(
             str(user_address),
             str(user_name),
@@ -62,6 +96,8 @@ with st.form(key='place_bet'):
             # int(earned_payout)
         )
         st.write("BetID")
+
+# st.dataframe(placed_bets_df)
 
 # Call block function. Checks to see if bet has finished.
 st.sidebar.markdown('## Check Bet Status')
