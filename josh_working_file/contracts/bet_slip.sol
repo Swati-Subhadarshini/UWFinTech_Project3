@@ -14,6 +14,7 @@ contract betWithFriends is ERC721Full {
         string username;
         string betSelection;
         uint256 amountOfWager;
+        uint256 potentialPayout;
         uint256 earnedPayout; 
     }
 
@@ -29,16 +30,28 @@ contract betWithFriends is ERC721Full {
         public payable {
         uint256 amountOfWager = msg.value;
         uint256 betID = totalSupply();
+        uint256 potentialPayout = 0;
         uint256 earnedPayout = 0;
         address payable receiver = address(this);
 
         _mint(user, betID);
 
-        betHistory[betID] = Bet(username, betSelection, amountOfWager, earnedPayout);
+        betHistory[betID] = Bet(username, betSelection, amountOfWager, potentialPayout, earnedPayout);
 
         bool sent = receiver.send(amountOfWager);
         require(sent, "Failed to send Ether");
         accountBalance = address(this).balance;
+    }
+
+    function reviewBet(uint256 betID) public view returns (string memory, string memory, uint256, uint256, uint256) {
+        
+        string memory _username = betHistory[betID].username;
+        string memory _betSelection = betHistory[betID].betSelection;
+        uint256 _amountOfWager = betHistory[betID].amountOfWager;
+        uint256 _potentialPayout = betHistory[betID].potentialPayout;
+        uint256 _earnedPayout = betHistory[betID].earnedPayout;
+        
+        return (_username, _betSelection, _amountOfWager, _potentialPayout, _earnedPayout);
     }
 
     function updateBet(
