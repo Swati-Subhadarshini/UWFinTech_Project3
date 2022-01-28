@@ -7,6 +7,7 @@ import json
 from dotenv import load_dotenv
 from web3 import Web3
 import odds_request
+import get_winners
 
 ####################
 # Web 3 Connection
@@ -57,7 +58,7 @@ Team_4 = f"{upcoming_games.iloc[1,4]} : {upcoming_games.iloc[1,5]}"
 ##################################################################################
 
 # Cover Image & Titles
-st.image("./Footballfield.jpeg")
+st.image("Resources/Footballfield.jpeg")
 st.markdown('# SuperBowl Bet Machine')
 st.markdown('## Current Week Matchups & Odds')
 
@@ -118,3 +119,16 @@ with st.sidebar.form(key="cash_bet"):
     submitted = submit_button = st.form_submit_button(label='Cash Bet')
     if submitted:
         st.write('Run cash bet function')
+
+st.image("Resources/weeklyresultsbanner.png")
+
+season_year = [2020, 2021, 2022]
+season_week = list(range(0,24))
+with st.form(key = "Weekly_Results"):
+    st.markdown("### Check Week Winners Here")
+    year = st.selectbox("Select Year", season_year)
+    week = st.selectbox("Select Week", season_week)
+    submitted = submit_button = st.form_submit_button(label='Get Weekly Results')
+    if submitted:
+        week_schedule = get_winners.get_week_schedule(week, year)
+        st.dataframe(week_schedule)
