@@ -216,10 +216,6 @@
 			{
 				"name": "",
 				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -312,6 +308,10 @@
 		"name": "betHistory",
 		"outputs": [
 			{
+				"name": "customerID",
+				"type": "address"
+			},
+			{
 				"name": "username",
 				"type": "string"
 			},
@@ -321,10 +321,6 @@
 			},
 			{
 				"name": "amountOfWager",
-				"type": "uint256"
-			},
-			{
-				"name": "potentialPayout",
 				"type": "uint256"
 			},
 			{
@@ -398,6 +394,24 @@
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "betID",
+				"type": "uint256"
+			},
+			{
+				"name": "recipient",
+				"type": "address"
+			}
+		],
+		"name": "winnerCashout",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

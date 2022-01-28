@@ -1,4 +1,4 @@
-# Library Imports
+# Library & Module Imports
 import streamlit as st
 from pathlib import Path
 import pandas as pd
@@ -7,6 +7,7 @@ import json
 from dotenv import load_dotenv
 from web3 import Web3
 import odds_request
+import get_winners
 
 ####################
 # Web 3 Connection
@@ -37,8 +38,9 @@ def load_contract():
 # Load the contract
 contract = load_contract()
 
+######################################
 # Python Code & Python Module Imports
-################################################################################
+######################################
 
 # Import upcoming_games.csv
 upcoming_games = pd.read_csv(Path("Resources/upcoming_games.csv"))
@@ -52,12 +54,12 @@ Team_2 = f"{upcoming_games.iloc[0,4]} : {upcoming_games.iloc[0,5]}"
 Team_3 = f"{upcoming_games.iloc[1,2]} : {upcoming_games.iloc[1,3]}"
 Team_4 = f"{upcoming_games.iloc[1,4]} : {upcoming_games.iloc[1,5]}"
 
-
+###########################
 # Streamlit Interface code.
-##################################################################################
+###########################
 
 # Cover Image & Titles
-st.image("./Footballfield.jpeg")
+st.image("Resources/Footballfield.jpeg")
 st.markdown('# SuperBowl Bet Machine')
 st.markdown('## Current Week Matchups & Odds')
 
@@ -75,7 +77,7 @@ with st.form(key='place_bet'):
     user_name = st.text_input('Enter your UserName')
     user_bet_selection = st.selectbox('Choose YOUR winner:', [Team_1, Team_2, Team_3, Team_4])
     user_wager = st.number_input('Wager Amount', min_value=0)
-    # Potential payout: We need to find a good way to take the odds from the bet selection and do the math to calculate the payout.
+    # Potential payout: Need to find a good way to take the odds from the bet selection and do the math to calculate the payout.
     # Probably an if statement. 
         # If odds are positive:
         # odds / 100 * wager = Potential payout
@@ -104,17 +106,40 @@ with st.form(key='place_bet'):
 # st.dataframe(placed_bets_df)
 
 # Call block function. Checks to see if bet has finished.
-st.sidebar.markdown('## Check Bet Status')
+st.sidebar.markdown('## Display Bet')
 with st.sidebar.form(key="check_bet"):
-    user_betID = st.text_input('Input your BetID')
-    submitted = submit_button = st.form_submit_button(label='Check Bet Status')
+    betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
+    submitted = submit_button = st.form_submit_button(label='Display Bet')
     if submitted:
-        st.write('Run check bet function')
+        user_name, user_bet_selection, user_wager, earned_payout = contract.functions.reviewBet(betID).call()
+        st.write(f"Username:{user_name}")
+        st.write(f"Selected Bet:{user_bet_selection}")
+        st.write(f"Wager:{user_wager/(1000000000000000000)} Ether")
+        #st.write(f"Potential Payout:{potential_payout*1000000000000000000} Ether") #Add this in final streamlit app
+        st.write(f"Earned Payout:{earned_payout} Wei")
 
 # Payout bet form & function
 st.sidebar.markdown('## Cash-In Winning Bet')
 with st.sidebar.form(key="cash_bet"):
-    user_betID = st.text_input('Input your BetID')
-    submitted = submit_button = st.form_submit_button(label='Cash Bet')
+    submitted = submit_button = st.form_submit_button(label='Cash Winning Bet')
     if submitted:
-        st.write('Run cash bet function')
+        try:
+            contract.functions.winnerCashout(betID, user_address).transact({'from': user_address, 'gas': 1000000})
+        except:
+            st.write("No access to this bet or you did not win.")
+
+st.image("Resources/weeklyresultsbanner.png")
+
+###############################
+# Get Weekly Results Function
+###############################
+season_year = [2020, 2021, 2022]
+season_week = list(range(0,24))
+with st.form(key = "Weekly_Results"):
+    st.markdown("### Check Week Winners Here")
+    year = st.selectbox("Select Year", season_year)
+    week = st.selectbox("Select Week", season_week)
+    submitted = submit_button = st.form_submit_button(label='Get Weekly Results')
+    if submitted:
+        week_schedule = get_winners.get_week_schedule(week, year)
+        st.dataframe(week_schedule)
