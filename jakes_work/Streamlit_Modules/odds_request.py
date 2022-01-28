@@ -49,7 +49,11 @@ def get_odds():
         print(f'Failed to get odds: status_code {odds_response.status_code}, response body {odds_response.text}')
     else:
         odds_json = odds_response.json()
+
+    return odds_json
     
+def update_games():
+    odds_json = get_odds()    
     upcoming_games = weekly_odds(odds_json)
     upcoming_games = upcoming_games.reset_index().drop(columns='index')
     first_column = upcoming_games.pop('away_team')
