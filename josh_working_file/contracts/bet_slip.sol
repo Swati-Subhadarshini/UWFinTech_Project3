@@ -13,11 +13,12 @@ contract betWithFriends is ERC721Full {
     }
 
     modifier onlyOwner() {
-    require(msg.sender == owner, "Only admin can update.");
-    _;
+        require(msg.sender == owner, "Only admin can update.");
+        _;
     }
 
     struct Bet {
+        address payable customerID;
         string username;
         string betSelection;
         uint256 amountOfWager;
@@ -34,6 +35,7 @@ contract betWithFriends is ERC721Full {
         string memory betSelection
         )
         public payable {
+        address payable customerID = msg.sender;
         uint256 amountOfWager = msg.value;
         uint256 betID = totalSupply();
         uint256 earnedPayout = 0;
@@ -41,7 +43,7 @@ contract betWithFriends is ERC721Full {
 
         _mint(user, betID);
 
-        betHistory[betID] = Bet(username, betSelection, amountOfWager, earnedPayout);
+        betHistory[betID] = Bet(customerID, username, betSelection, amountOfWager, earnedPayout);
 
         bool sent = receiver.send(amountOfWager);
         require(sent, "Failed to send Ether");
@@ -67,8 +69,15 @@ contract betWithFriends is ERC721Full {
         return betHistory[betID].earnedPayout;
     }
 
-    function transferProfits(uint amount, address payable recipient) public {
-        require(recipient == owner || recipient == authorizedRecipient, "The recipient address is not authorized!");
+    function transferProfits(uint amount, address payable recipient) public onlyOwner {
+        recipient.transfer(amount);
+        accountBalance = address(this).balance;
+    }
+
+    function winnerCashout(uint256 betID, address payable recipient) public {
+        uint256 amount = betHistory[betID].earnedPayout;
+        address payable winningCustomer = betHistory[betID].customerID;
+        require(msg.sender == winningCustomer && amount > 0, "You did not win or are not an authorized user.");
         recipient.transfer(amount);
         accountBalance = address(this).balance;
     }
