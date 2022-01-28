@@ -308,6 +308,10 @@
 		"name": "betHistory",
 		"outputs": [
 			{
+				"name": "customerID",
+				"type": "address"
+			},
+			{
 				"name": "username",
 				"type": "string"
 			},
@@ -390,6 +394,24 @@
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "betID",
+				"type": "uint256"
+			},
+			{
+				"name": "recipient",
+				"type": "address"
+			}
+		],
+		"name": "winnerCashout",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

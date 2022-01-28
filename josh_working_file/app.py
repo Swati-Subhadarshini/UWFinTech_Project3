@@ -47,37 +47,63 @@ contract = load_contract()
 games_list = ["IMPORT", "GAMES", "HERE"]
 accounts = w3.eth.accounts
 #account = accounts[0]
+
+st.markdown("### USER: Bet Parameters")
+
 user_account = st.selectbox("Select Account", options=accounts)
 username = st.text_input("Input Username")
 bet_selection = st.selectbox("Bet Selection", options=games_list)
 wager = st.number_input("Wager", min_value=0)
-st.markdown("## Potential Payout")
-potential_payout = wager*2
-st.write(potential_payout)
 
+################################################################################
+# USER FUNCTIONS
+################################################################################
+
+st.markdown("### USER: Place Bet")
 if st.button("Place Bet"):
     earned_payout = 0
     contract.functions.placeBet(user_account, username, bet_selection).transact({'from': user_account, 'value': w3.toWei(wager,'ether'), 'gas': 1000000})
 
-################################################################################
-# Display Bet Slip
-################################################################################
+st.markdown("### USER: Display Bet")
 betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
 if st.button("Display Bet"):
-    # Get the certificate owner
+    
     username, bet_selection, wager, earned_payout = contract.functions.reviewBet(betID).call()
     
     st.write(f"Username:{username}")
     st.write(f"Selected Bet:{bet_selection}")
     st.write(f"Wager:{wager/(1000000000000000000)} Ether")
-    st.write(f"Potential Payout:{potential_payout} Ether")
-    st.write(f"Earned Payout:{earned_payout} Ether")
+    #st.write(f"Potential Payout:{potential_payout*1000000000000000000} Ether") #Add this in final streamlit app
+    st.write(f"Earned Payout:{earned_payout} Wei")
 
+st.markdown("### USER: Cashout")
+if st.button("winnerCashout"):
+    try:
+        contract.functions.winnerCashout(betID, user_account).transact({'from': user_account, 'gas': 1000000})
+    except:
+        st.write("No access to this bet or you did not win.")
 
-new_earned_payout = st.number_input("Calculate Payout", min_value=0)
-if st.button("Update Bet"):
+################################################################################
+# OWNER ONLY FUNCTIONS
+################################################################################
+
+st.markdown("### Owner: Update Earned Payout")
+# Updates earneed payout (Only the owner of the contract can run this function.)
+new_earned_payout = (st.number_input("Calculate Payout", min_value=0)*1000000000000000000)
+if st.button("updateBet"):
     try:
         contract.functions.updateBet(betID, new_earned_payout).transact({'from': user_account, 'gas': 1000000})
         earned_payout = new_earned_payout
     except:
         st.write("You do not have permission for this.")
+
+# Allows for owner of the contract to transfer a set amount of money to their own account (Only the owner of the contract can run this function.)
+
+st.markdown("### Owner: Withdraw Profit")
+amount = st.number_input("Amount to withdraw:", min_value=0)
+
+if st.button("transferProfits"):
+    try:
+        contract.functions.transferProfits(amount, user_account).transact({'from': user_account, 'gas': 1000000})
+    except:
+        st.write("Not an authorized user.")

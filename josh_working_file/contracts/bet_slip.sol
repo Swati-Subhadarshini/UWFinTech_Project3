@@ -4,11 +4,18 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5
 
 contract betWithFriends is ERC721Full {
 
-    address payable owner = msg.sender;
+    address payable owner;
     uint public accountBalance;
     address payable authorizedRecipient;
 
-    constructor() public ERC721Full("BetSlip", "BET") {}
+    constructor() public ERC721Full("BetSlip", "BET") {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+    require(msg.sender == owner, "Only admin can update.");
+    _;
+    }
 
     struct Bet {
         string username;
@@ -51,10 +58,8 @@ contract betWithFriends is ERC721Full {
         return (_username, _betSelection, _amountOfWager, _earnedPayout);
     }
 
-    function updateBet(
-        uint256 betID,
-        uint256 newEarnedPayout
-    ) public returns (uint256) {
+    function updateBet(uint256 betID, uint256 newEarnedPayout) public onlyOwner returns (uint256) {
+
         betHistory[betID].earnedPayout = newEarnedPayout;
 
         emit completeBet(betID, newEarnedPayout);
