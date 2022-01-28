@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 from web3 import Web3
 import odds_request
 
-
+####################
 # Web 3 Connection
-##########################################################################
+###################
 # Define and connect a new Web3 provider
 w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
 
@@ -41,7 +41,7 @@ contract = load_contract()
 ################################################################################
 
 # Import upcoming_games.csv
-upcoming_games = pd.read_csv(Path("../Python_Modules/Resources/upcoming_games.csv"))
+upcoming_games = pd.read_csv(Path("Resources/upcoming_games.csv"))
 upcoming_games = upcoming_games.drop(columns="Unnamed: 0")
 
 # Create games in CSV as individual variables.
@@ -60,6 +60,10 @@ Team_4 = f"{upcoming_games.iloc[1,4]} : {upcoming_games.iloc[1,5]}"
 st.image("./Footballfield.jpeg")
 st.markdown('# SuperBowl Bet Machine')
 st.markdown('## Current Week Matchups & Odds')
+
+# Button to refresh games dataframe. Costs an API Call.
+if st.button("If games are not current, click here and then refresh the page."):
+    odds_request.update_games()
 
 # Show current week betting options
 st.dataframe(upcoming_games)
