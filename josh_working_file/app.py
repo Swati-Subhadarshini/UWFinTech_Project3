@@ -42,7 +42,7 @@ contract = load_contract()
 
 
 ################################################################################
-# Award Certificate
+# BET INPUTS
 ################################################################################
 games_list = ["IMPORT", "GAMES", "HERE"]
 accounts = w3.eth.accounts
@@ -63,7 +63,7 @@ st.markdown("### USER: Place Bet")
 if st.button("Place Bet"):
     try:
         earned_payout = 0
-        contract.functions.placeBet(user_account, username, bet_selection).transact({'from': user_account, 'value': w3.toWei(wager,'ether'), 'gas': 1000000})
+        contract.functions.placeBet(user_account, username, bet_selection).transact({'from': user_account, 'value': w3.toWei(wager,'wei'), 'gas': 1000000})
     except:
         st.write("Your bet is too large.")
 
@@ -75,7 +75,7 @@ if st.button("Display Bet"):
     
     st.write(f"Username:{username}")
     st.write(f"Selected Bet:{bet_selection}")
-    st.write(f"Wager:{wager/(1000000000000000000)} Ether")
+    st.write(f"Wager:{wager} Wei")
     #st.write(f"Potential Payout:{potential_payout*1000000000000000000} Ether") #Add this in final streamlit app
     st.write(f"Earned Payout:{earned_payout} Wei")
 
@@ -92,7 +92,7 @@ if st.button("winnerCashout"):
 
 st.markdown("### Owner: Update Earned Payout")
 # Updates earneed payout (Only the owner of the contract can run this function.)
-new_earned_payout = (st.number_input("Calculate Payout", min_value=0)*1000000000000000000)
+new_earned_payout = st.number_input("Calculate Payout", min_value=0)
 if st.button("updateBet"):
     try:
         contract.functions.updateBet(betID, new_earned_payout).transact({'from': user_account, 'gas': 1000000})
