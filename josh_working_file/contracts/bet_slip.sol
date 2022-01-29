@@ -29,17 +29,14 @@ contract betWithFriends is ERC721Full {
 
     event completeBet(uint256 betID, uint256 earnedPayout);
 
-    function placeBet (
-        address payable user,
-        string memory username,
-        string memory betSelection
-        )
-        public payable {
+    function placeBet (address payable user, string memory username, string memory betSelection) public payable {
         address payable customerID = msg.sender;
         uint256 amountOfWager = msg.value;
         uint256 betID = totalSupply();
         uint256 earnedPayout = 0;
         address payable receiver = address(this);
+
+        require(msg.value.mul(50) <= address(this).balance, "Your bet is too large.");
 
         _mint(user, betID);
 
@@ -75,11 +72,16 @@ contract betWithFriends is ERC721Full {
     }
 
     function winnerCashout(uint256 betID, address payable recipient) public {
+
         uint256 amount = betHistory[betID].earnedPayout;
         address payable winningCustomer = betHistory[betID].customerID;
         require(msg.sender == winningCustomer && amount > 0, "You did not win or are not an authorized user.");
+
         recipient.transfer(amount);
         accountBalance = address(this).balance;
+
+        betHistory[betID].earnedPayout = 0;
+        emit completeBet(betID, 0);
     }
 
     function deposit() public payable {

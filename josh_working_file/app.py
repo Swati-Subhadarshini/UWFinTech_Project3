@@ -61,8 +61,11 @@ wager = st.number_input("Wager", min_value=0)
 
 st.markdown("### USER: Place Bet")
 if st.button("Place Bet"):
-    earned_payout = 0
-    contract.functions.placeBet(user_account, username, bet_selection).transact({'from': user_account, 'value': w3.toWei(wager,'ether'), 'gas': 1000000})
+    try:
+        earned_payout = 0
+        contract.functions.placeBet(user_account, username, bet_selection).transact({'from': user_account, 'value': w3.toWei(wager,'ether'), 'gas': 1000000})
+    except:
+        st.write("Your bet is too large.")
 
 st.markdown("### USER: Display Bet")
 betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
