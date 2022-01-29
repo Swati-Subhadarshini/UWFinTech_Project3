@@ -1,0 +1,35 @@
+pragma solidity ^0.8.7;
+
+import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+
+contract SportsDataIOChainlink is ChainlinkClient {
+    using Chainlink for Chainlink.Request;
+    uint256 oraclePayment;
+  
+    constructor(uint256 _oraclePayment) public {
+        setPublicChainlinkToken();
+        oraclePayment = _oraclePayment;
+    }
+        function requestData(
+            address _oracle, 
+            bytes32 _jobId, 
+            string memory _date, 
+            string memory _team
+            )
+        public
+        {
+        Chainlink.Request memory req = buildChainlinkRequest(_jobId, this, this.fulfill.selector);
+            req.add("date", "2022-01-29");
+            req.add("teamName", "Kansas City Chiefs");
+            sendChainlinkRequestTo(_oracle, req, oraclePayment);
+        }
+        
+    bytes32 public data;
+
+    function fulfill(bytes32 _requestId, bytes32 _data)
+        public
+        recordChainlinkFulfillment(_requestId)
+        {
+        data = _data;
+        }
+}
