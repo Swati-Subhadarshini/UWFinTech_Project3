@@ -9,6 +9,7 @@ from web3 import Web3
 import odds_request
 import get_winners
 
+
 ####################
 # Web 3 Connection
 ###################
@@ -54,6 +55,11 @@ Team_2 = f"{upcoming_games.iloc[0,4]} : {upcoming_games.iloc[0,5]}"
 Team_3 = f"{upcoming_games.iloc[1,2]} : {upcoming_games.iloc[1,3]}"
 Team_4 = f"{upcoming_games.iloc[1,4]} : {upcoming_games.iloc[1,5]}"
 
+# Create Bet Dataframe shell
+columns = ['User Address', 'User Name', 'Bet Selection', 'Wager Amount']
+bet_df = pd.DataFrame(columns=columns)
+
+
 ###########################
 # Streamlit Interface code.
 ###########################
@@ -89,23 +95,17 @@ with st.form(key='place_bet'):
     submitted = submit_button = st.form_submit_button(label='Submit Bet')
     if submitted:
         contract.functions.placeBet(user_address, user_name, user_bet_selection).transact({'from': user_address, 'value': w3.toWei(user_wager, 'ether'), 'gas':1000000})
-        # def add_bet_info_to_df():
-            # BET DF BODY
+
+        bet_df = pd.DataFrame(columns=columns)
         
-        # This can all be removed or refined so that it returns the bet information nicely.
-        st.write(
-            str(user_address),
-            str(user_name),
-            str(user_bet_selection),
-            int(user_wager),
-            # int(potential_payout),
-            # int(earned_payout)
-        )
-        st.write("BetID")
 
-# st.dataframe(placed_bets_df)
+        # session_state.df = session_state.df.append({'User Address':user_address, 'User Name':user_name, 'Bet Selection':user_bet_selection, 'Wager Amount':user_wager},ignore_index = True)   
+        # new_row = {'User Address':user_address, 'User Name':user_name, 'Bet Selection':user_bet_selection, 'Wager Amount':user_wager}
+        # bet_df = bet_df.append(new_row, ignore_index=True)
 
-# Call block function. Checks to see if bet has finished.
+st.dataframe(bet_df)       
+
+# Display bet function.
 st.sidebar.markdown('## Display Bet')
 with st.sidebar.form(key="check_bet"):
     betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
