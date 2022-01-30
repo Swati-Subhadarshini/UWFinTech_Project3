@@ -9,6 +9,7 @@ from web3 import Web3
 import odds_request
 import get_winners
 
+
 ####################
 # Web 3 Connection
 ###################
@@ -54,6 +55,11 @@ Team_2 = f"{upcoming_games.iloc[0,4]} : {upcoming_games.iloc[0,5]}"
 Team_3 = f"{upcoming_games.iloc[1,2]} : {upcoming_games.iloc[1,3]}"
 Team_4 = f"{upcoming_games.iloc[1,4]} : {upcoming_games.iloc[1,5]}"
 
+# Create Submitted bet dataframe in session_state. This dataframe will persist through sessions until the cache is cleared.
+if "df" not in st.session_state:
+    st.session_state.df = pd.DataFrame(columns=['user_address', 'user_name', 'bet_selection', 'wager_amount'])
+
+
 ###########################
 # Streamlit Interface code.
 ###########################
@@ -69,6 +75,7 @@ if st.button("If games are not current, click here and then refresh the page."):
 
 # Show current week betting options
 st.dataframe(upcoming_games)
+
 
 # Create form for submitting bet widgets
 with st.form(key='place_bet'):
@@ -88,24 +95,22 @@ with st.form(key='place_bet'):
     earned_payout = st.text('Earned Payout Placeholder')
     submitted = submit_button = st.form_submit_button(label='Submit Bet')
     if submitted:
+        # Send to smart contract.
         contract.functions.placeBet(user_address, user_name, user_bet_selection).transact({'from': user_address, 'value': w3.toWei(user_wager, 'ether'), 'gas':1000000})
-        # def add_bet_info_to_df():
-            # BET DF BODY
+        # Add inputs to dataframe.
+        new_row = {'user_address':user_address, 'user_name':user_name, 'bet_selection':user_bet_selection, 'wager_amount':user_wager}
+        st.session_state.df = st.session_state.df.append(new_row, ignore_index=True)
+
+# Submitted bets dataframe
+st.dataframe(st.session_state.df)
         
-        # This can all be removed or refined so that it returns the bet information nicely.
-        st.write(
-            str(user_address),
-            str(user_name),
-            str(user_bet_selection),
-            int(user_wager),
-            # int(potential_payout),
-            # int(earned_payout)
-        )
-        st.write("BetID")
 
-# st.dataframe(placed_bets_df)
 
-# Call block function. Checks to see if bet has finished.
+  
+
+     
+
+# Display bet function.
 st.sidebar.markdown('## Display Bet')
 with st.sidebar.form(key="check_bet"):
     betID = st.number_input("Enter a Bet Token ID to display", value=0, step=1)
