@@ -123,20 +123,25 @@ with st.form(key='view_latest_bets'):
             betID = (contract.functions.totalSupply().call()-1)
             # If betID is less than 9, view all bets in a dataframe.
             if(betID <= 9):
-                for n in range(0, betID+1):
+                sub_index = range(0, betID+1)
+                for n in sub_index:
                     user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
                     new_row = {'user_name':user_name, 'bet_selection':user_bet_selection, 'wager_amount':user_wager, 'earned_payout':earned_payout, 'bet_status':bet_status}
                     st.session_state.df = st.session_state.df.append(new_row, ignore_index=True)
+                    #st.session_state.df.set_index(range(0,betID+1))
             # If betID is greater than 9, view latest 10 bets in a dataframe.
             else:
-                for n in range(betID-9, betID+1):
+                sub_index = range(betID-9, betID+1)
+                for n in sub_index:
                     user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
                     new_row = {'user_name':user_name, 'bet_selection':user_bet_selection, 'wager_amount':user_wager, 'earned_payout':earned_payout, 'bet_status':bet_status}
                     st.session_state.df = st.session_state.df.append(new_row, ignore_index=True)
+                    
             # Submitted bets dataframe
+            st.session_state.df.index = sub_index
             st.dataframe(st.session_state.df)
         except:
-            st.write("Your bet is too large.")
+            st.write("Error: We are working on this.")
         
 
 # Display bet function.
