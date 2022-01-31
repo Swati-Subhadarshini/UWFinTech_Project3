@@ -22,7 +22,7 @@ w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
 def load_contract():
 
     # Load Art Gallery ABI
-    with open(Path('./contracts/compiled/bet_slip_abi.json')) as f:
+    with open(Path('bet_slip_abi.json')) as f:
         bet_slip_abi = json.load(f)
 
     # Set the contract address (this is the address of the deployed contract)
@@ -115,29 +115,9 @@ with st.form(key='place_bet'):
         except:
             st.write("Your bet is too large.")
 
-# Create form for viewing the latest 10 bets
-with st.form(key='view_latest_bets'):
-    st.markdown('### Update to view the latest 10 bets here!')
-    submitted = submit_button = st.form_submit_button(label='View Latest')
-    if submitted:
-        # Pull the latest 10 bets from the blockchain ledger to view.
-        try:
-            betID = (contract.functions.totalSupply().call()-1)
-            if(betID <= 9):
-                for n in range(0, betID+1):
-                    user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
-                    new_row = {'user_name':user_name, 'bet_selection':user_bet_selection, 'wager_amount':user_wager, 'earned_payout':earned_payout, 'bet_status':bet_status}
-                    st.session_state.df = st.session_state.df.append(new_row, ignore_index=True)
-            else:
-                for n in range(betID-9, betID+1):
-                    user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
-                    new_row = {'user_name':user_name, 'bet_selection':user_bet_selection, 'wager_amount':user_wager, 'earned_payout':earned_payout, 'bet_status':bet_status}
-                    st.session_state.df = st.session_state.df.append(new_row, ignore_index=True)
-            # Submitted bets dataframe
-            st.dataframe(st.session_state.df)
-        except:
-            st.write("Your bet is too large.")
-        
+# Submitted bets dataframe
+st.dataframe(st.session_state.df)
+
 
 # Display bet function.
 st.sidebar.markdown('## Display Bet')
@@ -162,10 +142,8 @@ with st.sidebar.form(key="cash_bet"):
     if submitted:
         try:
             contract.functions.winnerCashout(winner_betID, winner_user_address).transact({'from': user_address, 'gas': 1000000})
-
         except:
             st.write("No access to this bet or you did not win.")
-    
 
 st.image("Resources/weeklyresultsbanner.png")
 
@@ -182,5 +160,3 @@ with st.form(key = "Weekly_Results"):
     if submitted:
         week_schedule = get_winners.get_week_schedule(week, year)
         st.dataframe(week_schedule)
-
-
