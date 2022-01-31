@@ -91,7 +91,7 @@ with st.form(key='place_bet'):
     user_address = st.text_input('Enter your public address')
     user_name = st.text_input('Enter your UserName')
     user_bet_selection = st.selectbox('Choose YOUR winner:', [Team_1, Team_2, Team_3, Team_4])
-    user_wager = st.number_input('Wager Amount', min_value=0)
+    user_wager = st.number_input('Wager Amount', min_value=0, value=0, step=1)
     # Potential payout: Need to find a good way to take the odds from the bet selection and do the math to calculate the payout.
     # Probably an if statement. 
         # If odds are positive:
@@ -111,7 +111,7 @@ with st.form(key='place_bet'):
             st.write(f"Your betID is: {betID}")
             
         except:
-            st.write("Your bet is too large.")
+            st.write("Incomplete user data or your bet is too large.")
 
 # Create form for viewing the latest 10 bets
 with st.form(key='view_latest_bets'):
@@ -188,6 +188,7 @@ with st.sidebar.form(key="update_bet"):
     #new_earned_payout = st.number_input("Calculate Payout", min_value=0)
     #new_bet_status = st.selectbox("Bet Selection", options=status_list)
     winner_bet_selection = st.selectbox('Choose THE winner:', [Team_1, Team_2, Team_3, Team_4, "DNP"])
+    loser_bet_selection = st.selectbox('Choose THE loser:', [Team_1, Team_2, Team_3, Team_4, "DNP"])
     submitted = submit_button = st.form_submit_button(label='Update Bet')
     if submitted:
         try:
@@ -199,7 +200,11 @@ with st.sidebar.form(key="update_bet"):
                 if (winner_bet_selection == user_bet_selection):
                     new_earned_payout = 100
                     new_bet_status = "Winner"                
-                    contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})            
+                    contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})  
+                elif (loser_bet_selection == user_bet_selection):
+                    new_earned_payout = 0
+                    new_bet_status = "Loser"                
+                    contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})          
         except:
             st.write("You do not have permission for this.")
 
