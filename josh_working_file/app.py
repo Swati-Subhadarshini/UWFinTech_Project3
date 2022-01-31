@@ -61,7 +61,7 @@ Team_4 = f"{upcoming_games.iloc[1,4]} : {upcoming_games.iloc[1,5]}"
 st.session_state.df = pd.DataFrame(columns=['user_name', 'bet_selection', 'wager_amount', 'earned_payout', 'bet_status'])
 
 # List of acceptable bet status
-status_list = ["Pending", "Winner", "Complete"]
+status_list = ["Pending", "Loser", "Winner", "Complete"]
 
 
 ###########################
@@ -184,26 +184,22 @@ st.sidebar.markdown('## Administrator Functions')
 with st.sidebar.form(key="update_bet"):
     st.markdown('### Update Earned Payout')
     # Updates earneed payout (Only the owner of the contract can run this function.)
-    update_betID = st.number_input("Enter a Bet Token ID to Update:", step=1)
-    new_earned_payout = st.number_input("Calculate Payout", min_value=0)
-    new_bet_status = st.selectbox("Bet Selection", options=status_list)
+    #update_betID = st.number_input("Enter a Bet Token ID to Update:", step=1)
+    #new_earned_payout = st.number_input("Calculate Payout", min_value=0)
+    #new_bet_status = st.selectbox("Bet Selection", options=status_list)
+    winner_bet_selection = st.selectbox('Choose THE winner:', [Team_1, Team_2, Team_3, Team_4, "DNP"])
     submitted = submit_button = st.form_submit_button(label='Update Bet')
     if submitted:
         try:
-            contract.functions.updateBet(update_betID, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})
-            earned_payout = new_earned_payout
-            bet_status = new_bet_status
             betID = (contract.functions.totalSupply().call()-1)
             index = range(0, betID+1)
-            
-            for n in sub_index:
-                user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
-                new_row = {'user_name':user_name, 'bet_selection':user_bet_selection, 'wager_amount':user_wager, 'earned_payout':earned_payout, 'bet_status':bet_status}
-                st.session_state.df = st.session_state.df.append(new_row, ignore_index=True)
-                
-            st.session_state.df.index = sub_index
-            st.dataframe(st.session_state.df)
 
+            for n in index:
+                user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
+                if (winner_bet_selection == user_bet_selection):
+                    new_earned_payout = 100
+                    new_bet_status = "Winner"                
+                    contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})            
         except:
             st.write("You do not have permission for this.")
 
