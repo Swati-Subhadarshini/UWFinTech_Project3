@@ -172,35 +172,42 @@ st.image("Resources/weeklyresultsbanner.png")
 ###########################
 # Admin Functions
 ###########################
-admin_account = os.getenv("ADMIN_PUBLIC_KEY")
 
-st.sidebar.markdown('## Administrator Functions')
-with st.sidebar.form(key="update_bet"):
-    st.markdown('### Update Earned Payout')
-    # Updates earneed payout (Only the owner of the contract can run this function.)
-    update_betID = st.number_input("Enter a Bet Token ID to Update:", step=1)
-    new_earned_payout = st.number_input("Calculate Payout", min_value=0)
-    new_bet_status = st.selectbox("Bet Selection", options=status_list)
-    submitted = submit_button = st.form_submit_button(label='Update Bet')
+st.sidebar.markdown('## Admin Login')
+with st.sidebar.form(key="admin_login"):
+    admin_pin = st.text_input('Enter you pin.')
+    admin_pin_verify = os.getenv("ADMIN_PIN")
+    admin_account = os.getenv("ADMIN_PUBLIC_KEY")    
+    submitted = submit_button = st.form_submit_button(label='LOGIN')
     if submitted:
-        try:
-            contract.functions.updateBet(update_betID, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})
-            earned_payout = new_earned_payout
-            bet_status = new_bet_status
-        except:
-            st.write("You do not have permission for this.")
-
-with st.sidebar.form(key="withdraw_profit"):
-    st.markdown('### Transfer Profits')
-    amount = st.number_input("Enter Amount To Withdraw:", step=1)
-    # Updates earneed payout (Only the owner of the contract can run this function.)
-    submitted = submit_button = st.form_submit_button(label='Withdraw Profits')
-    if submitted:
-        try:
-            contract.functions.transferProfits(amount, admin_account).transact({'from': admin_account, 'gas': 1000000})
-        except:
-            st.write("Not an authorized user.")
-
+        if (admin_pin == admin_pin_verify):
+            update_betID = st.number_input("Enter a Bet Token ID to Update:", step=1)
+            with st.sidebar.form(key="update_bet"):
+                st.markdown('### Update Earned Payout')
+                # Updates earneed payout (Only the owner of the contract can run this function.)
+                new_earned_payout = st.number_input("Calculate Payout", min_value=0)
+                new_bet_status = st.selectbox("Bet Selection", options=status_list)
+                submitted = submit_button = st.form_submit_button(label='Update Bet')
+                if submitted:
+                    try:
+                        contract.functions.updateBet(update_betID, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})
+                        earned_payout = new_earned_payout
+                        bet_status = new_bet_status
+                    except:
+                        st.write("You do not have permission for this.")
+            
+            with st.sidebar.form(key="withdraw_profit"):
+                st.markdown("### Withdraw Profit")
+                # Allows for owner of the contract to transfer a set amount of money to their own account (Only the owner of the contract can run this function.)
+                amount = st.number_input("Amount to withdraw:", min_value=0)
+                submitted = submit_button = st.form_submit_button(label='Withdraw Profit')
+                if submitted:
+                    try:
+                        contract.functions.transferProfits(amount, admin_account).transact({'from': admin_account, 'gas': 1000000})
+                    except:
+                        st.write("Not an authorized user.")
+        else:
+            st.write("Access Denied")  
 
 ###############################
 # Get Weekly Results Function
