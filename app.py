@@ -178,13 +178,10 @@ with st.sidebar.form(key="cash_bet"):
     winner_user_address = st.text_input('Enter your public address used to place bet:')
     submitted = submit_button = st.form_submit_button(label='Cash Winning Bet')
     if submitted:
-        #try:
-        #winner_user_address = contract.functions.ownerOf(winner_betID)
-        #winner_user_address = contract.function.ownerOf(winner_betID)
-        contract.functions.winnerCashout(winner_betID, winner_user_address).transact({'from': winner_user_address, 'gas': 1000000})
-
-        #except:
-            #st.write("No access to this bet or you did not win.")
+        try:
+            contract.functions.winnerCashout(winner_betID, winner_user_address).transact({'from': winner_user_address, 'gas': 1000000})
+        except:
+            st.write("No access to this bet or you did not win.")
     
 
 st.image("Resources/weeklyresultsbanner.png")
