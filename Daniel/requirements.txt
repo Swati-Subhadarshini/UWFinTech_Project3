@@ -1,0 +1,8 @@
+streamlit==
+pathlib==
+pandas==
+os==
+json==
+load_dotenv==
+Web3==
+Delete==
