@@ -52,8 +52,8 @@ upcoming_games = upcoming_games.drop(columns="Unnamed: 0")
 # and returns that many Team variables.
 Team_1 = f"{upcoming_games.iloc[0,2]} : {upcoming_games.iloc[0,3]}"
 Team_2 = f"{upcoming_games.iloc[0,4]} : {upcoming_games.iloc[0,5]}"
-Team_3 = f"{upcoming_games.iloc[1,2]} : {upcoming_games.iloc[1,3]}"
-Team_4 = f"{upcoming_games.iloc[1,4]} : {upcoming_games.iloc[1,5]}"
+# Team_3 = f"{upcoming_games.iloc[1,2]} : {upcoming_games.iloc[1,3]}"
+# Team_4 = f"{upcoming_games.iloc[1,4]} : {upcoming_games.iloc[1,5]}"
 
 # Create Submitted bet dataframe in session_state. This dataframe will persist through sessions until the cache is cleared.
 #if "df" not in st.session_state:
@@ -90,7 +90,7 @@ with st.form(key='place_bet'):
     st.markdown('### Place your bets here!')
     user_address = st.text_input('Enter your public address')
     user_name = st.text_input('Enter your UserName')
-    user_bet_selection = st.selectbox('Choose YOUR winner:', [Team_1, Team_2, Team_3, Team_4])
+    user_bet_selection = st.selectbox('Choose YOUR winner:', [Team_1, Team_2])
     user_wager = st.number_input('Wager Amount', min_value=0, value=0, step=1)
     # Potential payout: Need to find a good way to take the odds from the bet selection and do the math to calculate the payout.
     # Probably an if statement. 
@@ -187,8 +187,8 @@ with st.sidebar.form(key="update_bet"):
     #update_betID = st.number_input("Enter a Bet Token ID to Update:", step=1)
     #new_earned_payout = st.number_input("Calculate Payout", min_value=0)
     #new_bet_status = st.selectbox("Bet Selection", options=status_list)
-    winner_bet_selection = st.selectbox('Choose THE winner:', [Team_1, Team_2, Team_3, Team_4, "DNP"])
-    loser_bet_selection = st.selectbox('Choose THE loser:', [Team_1, Team_2, Team_3, Team_4, "DNP"])
+    winner_bet_selection = st.selectbox('Choose THE winner:', [Team_1, Team_2, "DNP"])
+    loser_bet_selection = st.selectbox('Choose THE loser:', [Team_1, Team_2, "DNP"])
     submitted = submit_button = st.form_submit_button(label='Update Bet')
     if submitted:
         try:
