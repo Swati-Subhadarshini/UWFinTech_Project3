@@ -79,7 +79,7 @@ contract betWithFriends is ERC721Full {
 
         uint256 amount = betHistory[betID].earnedPayout;
         address payable winningCustomer = betHistory[betID].customerID;
-        require(msg.sender == winningCustomer && amount > 0, "You did not win or are not an authorized user.");
+        require(recipient == winningCustomer && amount > 0, "You did not win or are not an authorized user.");
 
         recipient.transfer(amount);
         accountBalance = address(this).balance;

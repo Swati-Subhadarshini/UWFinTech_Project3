@@ -178,11 +178,13 @@ with st.sidebar.form(key="cash_bet"):
     winner_user_address = st.text_input('Enter your public address used to place bet:')
     submitted = submit_button = st.form_submit_button(label='Cash Winning Bet')
     if submitted:
-        try:
-            contract.functions.winnerCashout(winner_betID, winner_user_address).transact({'from': user_address, 'gas': 1000000})
+        #try:
+        #winner_user_address = contract.functions.ownerOf(winner_betID)
+        #winner_user_address = contract.function.ownerOf(winner_betID)
+        contract.functions.winnerCashout(winner_betID, winner_user_address).transact({'from': winner_user_address, 'gas': 1000000})
 
-        except:
-            st.write("No access to this bet or you did not win.")
+        #except:
+            #st.write("No access to this bet or you did not win.")
     
 
 st.image("Resources/weeklyresultsbanner.png")
@@ -203,22 +205,29 @@ with st.sidebar.form(key="update_bet"):
     loser_bet_selection = st.selectbox('Choose THE loser:', [Team_1, Team_2, "DNP"])
     submitted = submit_button = st.form_submit_button(label='Update Bet')
     if submitted:
-        try:
-            betID = (contract.functions.totalSupply().call()-1)
-            index = range(0, betID+1)
+    #try:
+        betID = (contract.functions.totalSupply().call()-1)
+        index = range(0, betID+1)
 
-            for n in index:
-                user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
-                if (winner_bet_selection == user_bet_selection):
-                    new_earned_payout = 100
-                    new_bet_status = "Winner"                
-                    contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})  
-                elif (loser_bet_selection == user_bet_selection):
-                    new_earned_payout = 0
-                    new_bet_status = "Loser"                
-                    contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})          
-        except:
-            st.write("You do not have permission for this.")
+        for n in index:
+            user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
+            if (winner_bet_selection == user_bet_selection):
+                odds = winner_bet_selection.split(':')
+                odd_value = int(odds[1])        
+                if odd_value > 0:
+                    earned_amount = (odd_value / 100) * user_wager
+                else:
+                    odd_value = odd_value * (-1)
+                    earned_amount = (100 / odd_value) * user_wager
+                new_earned_payout = int(earned_amount + user_wager)
+                new_bet_status = "Winner"                
+                contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})  
+            elif (loser_bet_selection == user_bet_selection):
+                new_earned_payout = 0
+                new_bet_status = "Loser"                
+                contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})          
+    #except:
+       # st.write("You do not have permission for this.")
 
 with st.sidebar.form(key="withdraw_profit"):
     st.markdown('### Transfer Profits')
