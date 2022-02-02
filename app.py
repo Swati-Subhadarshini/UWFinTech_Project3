@@ -78,7 +78,7 @@ st.markdown('## Current Week Matchups & Odds')
 ###########################
 
 # Button to refresh games dataframe. Costs an API Call.
-if st.button("If games are not current, click here and then refresh the page."):
+if st.button("Refresh Current Week Matchups (Costs an API Call)"):
     odds_request.update_games()
 
 # Show current week betting options
@@ -91,16 +91,13 @@ with st.form(key='place_bet'):
     user_address = st.text_input('Enter your public address')
     user_name = st.text_input('Enter your UserName')
     user_bet_selection = st.selectbox('Choose YOUR winner:', [Team_1, Team_2])
-    user_wager = st.number_input('Wager Amount', min_value=0, value=0, step=1)
+    user_wager = st.number_input('Wager Amount (In WEI)', min_value=0, value=0, step=1)
     # Potential payout: Need to find a good way to take the odds from the bet selection and do the math to calculate the payout.
     # Probably an if statement. 
         # If odds are positive:
         # odds / 100 * wager = Potential payout
         # If odds are negative:
         # 100 / odds * wager = Potential payout
-    potential_payout = st.text('Potential Payout Placeholder')
-    # earned_payout will be 0 unless the bet wins and then it will equal potential_payout
-    earned_payout = st.text('Earned Payout Placeholder')
     submitted = submit_button = st.form_submit_button(label='Submit Bet')
     if submitted:
         # Send to smart contract.
@@ -109,9 +106,24 @@ with st.form(key='place_bet'):
             # Add inputs to dataframe.
             betID = (contract.functions.totalSupply().call()-1)
             st.write(f"Your betID is: {betID}")
+
+            # Calculating Potential Winnigs & Total Payout
+            st.write('Your Selection:', user_bet_selection)
+            odds = user_bet_selection.split(':')
+            odd_value = int(odds[1])        
+            if odd_value > 0:
+                earned_amount = (odd_value / 100) * user_wager
+            else:
+                odd_value = odd_value * (-1)
+                earned_amount = (100 / odd_value) * user_wager
+            st.write('Odds value is:', odd_value)
+            st.write('Potential Winnings:', earned_amount)    
+            st.write('Total Payout:', earned_amount + user_wager)
             
         except:
             st.write("Incomplete user data or your bet is too large.")
+        
+        
 
 # Create form for viewing the latest 10 bets
 with st.form(key='view_latest_bets'):
@@ -167,8 +179,7 @@ with st.sidebar.form(key="cash_bet"):
     submitted = submit_button = st.form_submit_button(label='Cash Winning Bet')
     if submitted:
         try:
-            contract.functions.winnerCashout(winner_betID, winner_user_address).transact({'from': user_address, 'gas': 1000000})
-
+            contract.functions.winnerCashout(winner_betID, winner_user_address).transact({'from': winner_user_address, 'gas': 1000000})
         except:
             st.write("No access to this bet or you did not win.")
     
@@ -191,22 +202,29 @@ with st.sidebar.form(key="update_bet"):
     loser_bet_selection = st.selectbox('Choose THE loser:', [Team_1, Team_2, "DNP"])
     submitted = submit_button = st.form_submit_button(label='Update Bet')
     if submitted:
-        try:
-            betID = (contract.functions.totalSupply().call()-1)
-            index = range(0, betID+1)
+    #try:
+        betID = (contract.functions.totalSupply().call()-1)
+        index = range(0, betID+1)
 
-            for n in index:
-                user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
-                if (winner_bet_selection == user_bet_selection):
-                    new_earned_payout = 100
-                    new_bet_status = "Winner"                
-                    contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})  
-                elif (loser_bet_selection == user_bet_selection):
-                    new_earned_payout = 0
-                    new_bet_status = "Loser"                
-                    contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})          
-        except:
-            st.write("You do not have permission for this.")
+        for n in index:
+            user_name, user_bet_selection, user_wager, earned_payout, bet_status = contract.functions.reviewBet(n).call()
+            if (winner_bet_selection == user_bet_selection):
+                odds = winner_bet_selection.split(':')
+                odd_value = int(odds[1])        
+                if odd_value > 0:
+                    earned_amount = (odd_value / 100) * user_wager
+                else:
+                    odd_value = odd_value * (-1)
+                    earned_amount = (100 / odd_value) * user_wager
+                new_earned_payout = int(earned_amount + user_wager)
+                new_bet_status = "Winner"                
+                contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})  
+            elif (loser_bet_selection == user_bet_selection):
+                new_earned_payout = 0
+                new_bet_status = "Loser"                
+                contract.functions.updateBet(n, new_earned_payout, new_bet_status).transact({'from': admin_account, 'gas': 1000000})          
+    #except:
+       # st.write("You do not have permission for this.")
 
 with st.sidebar.form(key="withdraw_profit"):
     st.markdown('### Transfer Profits')
