@@ -24,3 +24,6 @@ You will need to be able to run python, install streamlit, install pandas, set-u
 
 ## Links 
 Presentation  https://docs.google.com/presentation/d/1_IXUOx51XeIoHVIQcF3E7ARBi9NXnUprILB-fZXpThM/edit?usp=sharing 
+
+## Screenshot of Application 
+![screen](https://github.com/Swati-Subhadarshini/UWFinTech_Project3/blob/main/Resources/Screenshot.png)
