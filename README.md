@@ -8,13 +8,14 @@ To create a blockchain betting platform that accepts bets records bets on the bl
 You will need to be able to run python, install streamlit, install pandas, set-up remix, and have a basic understanding of blockchain, and solidity contracts. 
 
 ## List of Data Sources / Technology 
-*	BetSlip – Api for odds calculation 
+*	BetSlip – API for odds calculation 
 *	Sportify API – to display NFL game results
 *	Solidity 
 *	Python 
 *	Pandas
 *	Solidity 
 *	Streamlit 
+*	web3
 
 ## Ropsten Contact Address 
 0xD6A51Ecf8976D3f871Da96871241aecFD48827c8
