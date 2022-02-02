@@ -8,3 +8,4 @@ Werkzeug==0.11.15
 gunicorn==19.0.0
 Flask==0.11.1
 python-dotenv==0.16.0
+git+git://github.com/roclark/sportsipy
