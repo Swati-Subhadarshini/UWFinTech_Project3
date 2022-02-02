@@ -1,6 +1,8 @@
 # Superbowl Bet Machine
 Josh Creveling, Jacob Vissering, Swati Subhadarahini, Daniel McCaffrey, Niki van Dyck, Lisa Bailey
 
+![field](https://github.com/Swati-Subhadarshini/UWFinTech_Project3/blob/main/Resources/Footballfield.jpeg)
+
 ## Project Overview 
 To create a blockchain betting platform that accepts bets records bets on the blockchain calculates and offers bets based on real-time odds, and fulfills them with a supporting payout solution. 
 
