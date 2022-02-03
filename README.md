@@ -20,10 +20,12 @@ You will need to be able to run python, install streamlit, install pandas, set-u
 *	web3
 
 ## Ropsten Contact Address 
-0xD6A51Ecf8976D3f871Da96871241aecFD48827c8
+* [0xD6A51Ecf8976D3f871Da96871241aecFD48827c8](https://ropsten.etherscan.io/address/0xD6A51Ecf8976D3f871Da96871241aecFD48827c8)
 
 ## Links 
-Presentation  https://docs.google.com/presentation/d/1_IXUOx51XeIoHVIQcF3E7ARBi9NXnUprILB-fZXpThM/edit?usp=sharing 
+* [Presentation](https://docs.google.com/presentation/d/1_IXUOx51XeIoHVIQcF3E7ARBi9NXnUprILB-fZXpThM/edit?usp=sharing) 
+
+* [Tutorial](https://youtu.be/omm4YBpCMwE)
 
 ## Screenshot of Application 
 ![screen](https://github.com/Swati-Subhadarshini/UWFinTech_Project3/blob/main/Resources/Screenshot.png)
